@@ -1,14 +1,12 @@
-import fastify from "fastify";
-import crypto from "crypto";
-import { knexDb } from "./database";
+import { env } from "./env"
+import fastify from "fastify"
+import crypto from "crypto"
+import { knexDb } from "./database"
+import { transactionsRoutes } from "./routes/transactions"
 
-const app = fastify();
+const app = fastify()
 
-app.get("/", async () => {
-  const transactions = await knexDb("transactions").select("*");
-
-  return transactions;
-});
+app.register(transactionsRoutes)
 
 app.post("/", async () => {
   const transaction = await knexDb("transactions")
@@ -17,15 +15,15 @@ app.post("/", async () => {
       title: "Salary1",
       amount: 1000,
     })
-    .returning("*");
+    .returning("*")
 
-  return transaction;
-});
+  return transaction
+})
 
 app
   .listen({
-    port: 3333,
+    port: env.PORT,
   })
   .then(() => {
-    console.log(`Server is running on port 3333`);
-  });
+    console.log(`Server is running on port ${env.PORT}`)
+  })
